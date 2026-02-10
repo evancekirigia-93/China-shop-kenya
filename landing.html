@@ -3,34 +3,41 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>China Shop Kenya – Deals</title>
+  <title>China Shop Kenya | Deals</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <header class="topbar">
-    <a href="index.html" class="back">← Back to Shop</a>
-    <h1>Hot Deals & Discounts</h1>
-  </header>
-  <main class="container">
-    <div class="deal-hero">
-      <img src="banner.jpg" alt="Deals"/>
-      <div class="deal-text">
-        <h2>Weekly Discounts</h2>
-        <p>Update this page anytime with new offers.</p>
-      </div>
+    <a href="index.html" class="solid-btn">← Back to Shop</a>
+    <div class="brand">
+      <p class="eyebrow">Discount Center</p>
+      <h1>Hot Deals</h1>
     </div>
-    <div class="grid" id="deals"></div>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <h2>Current Promotions</h2>
+      <p>These offers are loaded directly from products saved in your main store page.</p>
+      <div class="grid" id="deals"></div>
+    </section>
   </main>
+
   <script>
-    const deals = JSON.parse(localStorage.getItem("products")||"[]").filter(p=>p.onSale);
+    const deals = JSON.parse(localStorage.getItem("products") || "[]");
     const el = document.getElementById("deals");
-    el.innerHTML = deals.map(p=>`
-      <div class="card">
-        <img src="${p.img || 'https://via.placeholder.com/300x200?text=Product'}" />
-        <h4>${p.name}</h4>
-        <p>KES ${p.price}</p>
-      </div>
-    `).join("");
+
+    if (!deals.length) {
+      el.innerHTML = `<p class="note">No products yet. Add products from the main homepage admin section to show deals here.</p>`;
+    } else {
+      el.innerHTML = deals.map((p) => `
+        <article class="card">
+          <img src="${p.img || 'https://via.placeholder.com/300x200?text=Product'}" alt="${p.name}" />
+          <h4>${p.name}</h4>
+          <p>KES ${Number(p.price).toLocaleString()}</p>
+        </article>
+      `).join("");
+    }
   </script>
 </body>
 </html>
