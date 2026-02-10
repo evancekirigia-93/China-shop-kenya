@@ -17,7 +17,6 @@ const state = {
   bannerIndex: Number(localStorage.getItem("bannerIndex") || 0),
   socials: JSON.parse(localStorage.getItem("socials") || "null") || DEFAULT_SOCIALS,
   logo: localStorage.getItem("logo") || "logo.png",
-  activeCategory: "all",
 };
 
 state.products = state.products.map((product, index) => ({
@@ -68,38 +67,17 @@ function renderCategoryOptions() {
   document.getElementById("bannerTargetCat").innerHTML = catOptions;
 }
 
-function setActiveCategory(categorySlug) {
-  state.activeCategory = categorySlug;
-  renderCategoryNav();
-  renderCategories();
-  renderProducts();
-
-  if (categorySlug !== "all") {
-    const section = document.getElementById(`cat-${categorySlug}`);
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-}
-
 function renderCategoryNav() {
-  const allTab = `<button class="cat-tab ${state.activeCategory === "all" ? "active" : ""}" data-cat="all">All</button>`;
-  const tabs = state.categories.map((name) => {
-    const slug = slugify(name);
-    const active = state.activeCategory === slug ? "active" : "";
-    return `<button class="cat-tab ${active}" data-cat="${slug}">${name}</button>`;
-  }).join("");
-
-  categoryNavLinks.innerHTML = allTab + tabs;
-  categoryNavLinks.querySelectorAll(".cat-tab").forEach((tab) => {
-    tab.onclick = () => setActiveCategory(tab.dataset.cat);
-  });
+  categoryNavLinks.innerHTML = state.categories
+    .map((name) => {
+      const slug = slugify(name);
+      return `<a class="cat-tab" href="category.html?cat=${slug}">${name}</a>`;
+    })
+    .join("");
 }
 
 function renderCategories() {
-  const visibleCategories = state.activeCategory === "all"
-    ? state.categories
-    : state.categories.filter((name) => slugify(name) === state.activeCategory);
-
-  categoryWrap.innerHTML = visibleCategories
+  categoryWrap.innerHTML = state.categories
     .map((name) => `
       <article class="category-row" id="cat-${slugify(name)}">
         <div class="category-head"><h3>${name}</h3></div>
@@ -126,10 +104,7 @@ function renderProducts() {
       </a>
       <a class="product-link" href="product.html?id=${product.id}"><h4>${product.name}</h4></a>
       <p>KES ${Number(product.price).toLocaleString()}</p>
-      <div class="card-actions">
-        <a class="outline-btn" href="product.html?id=${product.id}">Read details</a>
-        <button class="solid-btn">Add to basket</button>
-      </div>
+      <button class="solid-btn">Add to basket</button>
     `;
 
     card.querySelector("button").onclick = () => {
@@ -146,11 +121,7 @@ function renderBanner() {
   const safeIndex = ((state.bannerIndex % state.banners.length) + state.banners.length) % state.banners.length;
   const active = state.banners[safeIndex];
   bannerImg.src = active.image;
-  bannerLink.href = `#cat-${active.targetCat}`;
-  bannerLink.onclick = (event) => {
-    event.preventDefault();
-    setActiveCategory(active.targetCat);
-  };
+  bannerLink.href = `category.html?cat=${active.targetCat}`;
   bannerMeta.textContent = `Banner ${safeIndex + 1} of ${state.banners.length} · Target: ${active.targetCat}`;
 }
 
@@ -184,7 +155,9 @@ document.getElementById("addCategory").onclick = () => {
   document.getElementById("newCategoryInput").value = "";
   save();
   renderCategoryOptions();
-  setActiveCategory(slugify(value));
+  renderCategoryNav();
+  renderCategories();
+  renderProducts();
 };
 
 document.getElementById("addProduct").onclick = async () => {

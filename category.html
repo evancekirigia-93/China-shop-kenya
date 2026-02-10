@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>China Shop Kenya | Category</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="solid-btn">← Back to Shop</a>
+    <div class="brand"><h1 id="catTitle">Category</h1></div>
+    <a href="cart.html" class="outline-btn">Open Cart</a>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <div id="categoryProducts" class="products-row"></div>
+    </section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat') || '';
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const host = document.getElementById('categoryProducts');
+    const title = document.getElementById('catTitle');
+
+    const categoryName = categories.find((name) =>
+      name.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') === cat,
+    ) || 'Category';
+
+    title.textContent = categoryName;
+
+    const items = products.filter((p) => p.cat === cat);
+    if (!items.length) {
+      host.innerHTML = '<p class="note">No products in this category yet.</p>';
+    } else {
+      host.innerHTML = items.map((p) => `
+        <article class="card">
+          <a class="product-link" href="product.html?id=${p.id}"><img src="${p.img || 'banner.jpg'}" alt="${p.name}" /></a>
+          <a class="product-link" href="product.html?id=${p.id}"><h4>${p.name}</h4></a>
+          <p>KES ${Number(p.price).toLocaleString()}</p>
+          <button class="solid-btn" onclick="addToCart('${p.id}')">Add to basket</button>
+        </article>
+      `).join('');
+    }
+
+    window.addToCart = (id) => {
+      const selected = products.find((p) => p.id === id);
+      if (!selected) return;
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      cart.push(selected);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert('Added to basket');
+    };
+  </script>
+</body>
+</html>
