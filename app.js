@@ -1,9 +1,9 @@
 const DEFAULT_CATEGORIES = ["Electronics", "Utensils", "Home & Decor", "Beauty & Lifestyle"];
 const DEFAULT_PRODUCTS = [
-  { name: "Bluetooth Speaker", price: 3200, cat: "electronics", img: "banner.jpg" },
-  { name: "Air Fryer", price: 7800, cat: "electronics", img: "banner.jpg" },
-  { name: "Knife Set", price: 2450, cat: "utensils", img: "banner.jpg" },
-  { name: "Non-stick Pot", price: 3900, cat: "utensils", img: "banner.jpg" },
+  { id: "p1", name: "Bluetooth Speaker", price: 3200, cat: "electronics", img: "banner.jpg", description: "Portable speaker with clear sound for indoor and outdoor use.", manual: "Charge fully before first use. Keep away from water and direct flames." },
+  { id: "p2", name: "Air Fryer", price: 7800, cat: "electronics", img: "banner.jpg", description: "Compact air fryer with fast heat circulation and simple controls.", manual: "Preheat 3 minutes. Do not exceed basket max line. Clean basket after each use." },
+  { id: "p3", name: "Knife Set", price: 2450, cat: "utensils", img: "banner.jpg", description: "Multi-purpose kitchen knife set for slicing and chopping.", manual: "Hand wash and dry after use. Store safely in stand." },
+  { id: "p4", name: "Non-stick Pot", price: 3900, cat: "utensils", img: "banner.jpg", description: "Durable non-stick pot ideal for everyday meals.", manual: "Use medium heat and non-metal utensils to protect coating." },
 ];
 const DEFAULT_BANNERS = [{ image: "banner.jpg", targetCat: "electronics" }];
 const DEFAULT_SOCIALS = { facebook: "", instagram: "", tiktok: "", x: "", youtube: "" };
@@ -19,14 +19,21 @@ const state = {
   logo: localStorage.getItem("logo") || "logo.png",
 };
 
+state.products = state.products.map((product, index) => ({
+  ...product,
+  id: product.id || `p-${Date.now()}-${index}`,
+  description: product.description || "",
+  manual: product.manual || "",
+}));
+
 const categoryWrap = document.getElementById("categories");
+const categoryNavLinks = document.getElementById("categoryNavLinks");
 const cartCount = document.getElementById("cartCount");
 const bannerImg = document.getElementById("bannerImg");
 const bannerLink = document.getElementById("bannerLink");
 const bannerMeta = document.getElementById("bannerMeta");
 const logoImg = document.getElementById("logoImg");
 const socialLinks = document.getElementById("socialLinks");
-const discountList = document.getElementById("discountList");
 
 function slugify(value) {
   return value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -60,7 +67,12 @@ function renderCategoryOptions() {
     .join("");
   document.getElementById("pCat").innerHTML = catOptions;
   document.getElementById("bannerTargetCat").innerHTML = catOptions;
-  document.getElementById("discountCat").innerHTML = catOptions;
+}
+
+function renderCategoryNav() {
+  categoryNavLinks.innerHTML = state.categories
+    .map((name) => `<a href="#cat-${slugify(name)}">${name}</a>`)
+    .join("");
 }
 
 function renderCategories() {
@@ -86,10 +98,15 @@ function renderProducts() {
     const card = document.createElement("article");
     card.className = "card";
     card.innerHTML = `
-      <img src="${product.img || "banner.jpg"}" alt="${product.name}" />
-      <h4>${product.name}</h4>
+      <a class="product-link" href="product.html?id=${product.id}">
+        <img src="${product.img || "banner.jpg"}" alt="${product.name}" />
+      </a>
+      <a class="product-link" href="product.html?id=${product.id}"><h4>${product.name}</h4></a>
       <p>KES ${Number(product.price).toLocaleString()}</p>
-      <button class="solid-btn">Add to basket</button>
+      <div class="card-actions">
+        <a class="outline-btn" href="product.html?id=${product.id}">Read details</a>
+        <button class="solid-btn">Add to basket</button>
+      </div>
     `;
 
     card.querySelector("button").onclick = () => {
@@ -108,23 +125,6 @@ function renderBanner() {
   bannerImg.src = active.image;
   bannerLink.href = `#cat-${active.targetCat}`;
   bannerMeta.textContent = `Banner ${safeIndex + 1} of ${state.banners.length} · Target: ${active.targetCat}`;
-}
-
-function renderDiscounts() {
-  if (!state.discounts.length) {
-    discountList.innerHTML = '<p class="note">No discounts yet. Add from the Discount Tab in admin.</p>';
-    return;
-  }
-
-  discountList.innerHTML = state.discounts
-    .map((d) => `
-      <article class="card deal-card">
-        <img src="${d.img || "banner.jpg"}" alt="${d.name}" />
-        <h4>${d.name}</h4>
-        <p>${d.percent}% OFF · ${d.cat}</p>
-      </article>
-    `)
-    .join("");
 }
 
 function renderSocialLinks() {
@@ -157,6 +157,7 @@ document.getElementById("addCategory").onclick = () => {
   document.getElementById("newCategoryInput").value = "";
   save();
   renderCategoryOptions();
+  renderCategoryNav();
   renderCategories();
   renderProducts();
 };
@@ -165,13 +166,17 @@ document.getElementById("addProduct").onclick = async () => {
   const name = document.getElementById("pName").value.trim();
   const price = Number(document.getElementById("pPrice").value);
   const cat = document.getElementById("pCat").value;
+  const description = document.getElementById("pDescription").value.trim();
+  const manual = document.getElementById("pManual").value.trim();
   const fileInput = document.getElementById("pImgFile");
   if (!name || !price || !cat || !fileInput.files.length) return alert("Please enter product name, price, category and upload a product photo.");
 
   const img = await readImage(fileInput);
-  state.products.unshift({ name, price, cat, img });
+  state.products.unshift({ id: `p${Date.now()}`, name, price, cat, img, description, manual });
   document.getElementById("pName").value = "";
   document.getElementById("pPrice").value = "";
+  document.getElementById("pDescription").value = "";
+  document.getElementById("pManual").value = "";
   fileInput.value = "";
   save();
   renderProducts();
@@ -200,22 +205,6 @@ document.getElementById("replaceBannerImage").onclick = async () => {
   replaceBannerFileInput.value = "";
   save();
   renderBanner();
-};
-
-document.getElementById("addDiscount").onclick = async () => {
-  const name = document.getElementById("discountName").value.trim();
-  const percent = Number(document.getElementById("discountPercent").value);
-  const cat = document.getElementById("discountCat").value;
-  const fileInput = document.getElementById("discountImgFile");
-  if (!name || !percent || !cat || !fileInput.files.length) return alert("Fill discount name, %, category and image.");
-
-  const img = await readImage(fileInput);
-  state.discounts.unshift({ name, percent, cat, img });
-  document.getElementById("discountName").value = "";
-  document.getElementById("discountPercent").value = "";
-  fileInput.value = "";
-  save();
-  renderDiscounts();
 };
 
 document.getElementById("saveLogo").onclick = async () => {
@@ -259,9 +248,9 @@ logoImg.src = state.logo;
 cartCount.textContent = String(state.cart.length);
 hydrateSocialInputs();
 renderCategoryOptions();
+renderCategoryNav();
 renderCategories();
 renderProducts();
 renderBanner();
-renderDiscounts();
 renderSocialLinks();
 save();

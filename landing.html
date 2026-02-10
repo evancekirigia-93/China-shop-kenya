@@ -15,7 +15,7 @@
   <main class="container">
     <section class="panel">
       <h2>All Discounts</h2>
-      <p>Discounts you add from the admin discount tab appear here.</p>
+      <p>Saved discounts appear here.</p>
       <div class="deals-grid" id="deals"></div>
     </section>
   </main>
@@ -25,7 +25,7 @@
     const el = document.getElementById('deals');
 
     if (!discounts.length) {
-      el.innerHTML = '<p class="note">No discounts yet. Add discounts from homepage admin panel.</p>';
+      el.innerHTML = '<p class="note">No discounts yet.</p>';
     } else {
       el.innerHTML = discounts.map((d) => `
         <article class="card deal-card">

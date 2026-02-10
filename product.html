@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>China Shop Kenya | Product Details</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="solid-btn">← Back to Shop</a>
+    <div class="brand"><h1>Product Details</h1></div>
+  </header>
+
+  <main class="container">
+    <section class="panel product-details" id="productDetails"></section>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    const product = products.find((p) => p.id === id);
+    const host = document.getElementById('productDetails');
+
+    if (!product) {
+      host.innerHTML = '<p class="note">Product not found. Go back and select a product again.</p>';
+    } else {
+      host.innerHTML = `
+        <div class="product-layout">
+          <img src="${product.img || 'banner.jpg'}" alt="${product.name}" />
+          <div>
+            <h2>${product.name}</h2>
+            <p class="total">KES ${Number(product.price).toLocaleString()}</p>
+            <h3>Description</h3>
+            <p>${product.description || 'No description added yet.'}</p>
+            <h3>Product Manual</h3>
+            <p>${product.manual || 'No manual added yet.'}</p>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

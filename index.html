@@ -23,6 +23,10 @@
     </div>
   </header>
 
+  <nav class="category-nav" aria-label="Shop categories">
+    <div id="categoryNavLinks" class="category-nav-links"></div>
+  </nav>
+
   <section class="hero-wrap" aria-label="Discount banner carousel">
     <a id="bannerLink" href="#" class="banner-image-link" aria-label="Open selected product category">
       <img id="bannerImg" src="banner.jpg" alt="Discount products on promotion" />
@@ -32,14 +36,6 @@
   </section>
 
   <main class="container">
-    <section class="panel discount-tab">
-      <div class="panel-header">
-        <h3>Discount Tab</h3>
-        <a href="landing.html" class="solid-btn">Open Discount Corner</a>
-      </div>
-      <div id="discountList" class="deals-grid"></div>
-    </section>
-
     <section id="categories" class="categories" aria-label="Editable product categories"></section>
 
     <section class="panel admin">
@@ -54,6 +50,8 @@
         <input id="pName" placeholder="Product name"/>
         <input id="pPrice" placeholder="Price (KES)" type="number"/>
         <select id="pCat"></select>
+        <textarea id="pDescription" placeholder="Product description"></textarea>
+        <textarea id="pManual" placeholder="Product manual / usage notes"></textarea>
         <input id="pImgFile" type="file" accept="image/*"/>
         <button id="addProduct" class="solid-btn">Add Product</button>
       </div>
@@ -64,14 +62,6 @@
         <button id="addBanner" class="outline-btn">Add Banner Slide</button>
         <input id="replaceBannerFileInput" type="file" accept="image/*" />
         <button id="replaceBannerImage" class="solid-btn">Replace Current Banner Image</button>
-      </div>
-
-      <div class="admin-grid banner-admin">
-        <input id="discountName" placeholder="Discount item name" />
-        <input id="discountPercent" placeholder="Discount %" type="number" />
-        <select id="discountCat"></select>
-        <input id="discountImgFile" type="file" accept="image/*" />
-        <button id="addDiscount" class="solid-btn">Add Discount</button>
       </div>
 
       <div class="admin-grid banner-admin">
