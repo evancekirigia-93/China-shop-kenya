@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>China Shop Kenya – Deals</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="back">← Back to Shop</a>
+    <h1>Hot Deals & Discounts</h1>
+  </header>
+  <main class="container">
+    <div class="deal-hero">
+      <img src="banner.jpg" alt="Deals"/>
+      <div class="deal-text">
+        <h2>Weekly Discounts</h2>
+        <p>Update this page anytime with new offers.</p>
+      </div>
+    </div>
+    <div class="grid" id="deals"></div>
+  </main>
+  <script>
+    const deals = JSON.parse(localStorage.getItem("products")||"[]").filter(p=>p.onSale);
+    const el = document.getElementById("deals");
+    el.innerHTML = deals.map(p=>`
+      <div class="card">
+        <img src="${p.img || 'https://via.placeholder.com/300x200?text=Product'}" />
+        <h4>${p.name}</h4>
+        <p>KES ${p.price}</p>
+      </div>
+    `).join("");
+  </script>
+</body>
+</html>

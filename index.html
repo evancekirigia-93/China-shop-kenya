@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>China Shop Kenya – Cheap Utensils, Electronics & Home Items</title>
+  <meta name="description" content="China Shop Kenya. Buy utensils, electronics, home items and more at affordable prices." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo-wrap">
+      <img id="logoImg" src="logo.png" alt="China Shop Kenya Logo"/>
+      <div>
+        <h1>China Shop Kenya</h1>
+        <small>Edit logo by replacing logo.png</small>
+      </div>
+    </div>
+    <div class="actions">
+      <input id="search" placeholder="Search products..." />
+      <button id="viewCartBtn">Cart (<span id="cartCount">0</span>)</button>
+    </div>
+  </header>
+
+  <a class="banner" href="landing.html">
+    <img id="bannerImg" src="banner.jpg" alt="Discounts"/>
+    <div class="banner-cta">Click for Discounts</div>
+  </a>
+
+  <main class="container">
+    <section class="columns">
+      <div class="column"><h2>New Listings</h2><div id="new" class="grid"></div></div>
+      <div class="column"><h2>Utensils</h2><div id="utensils" class="grid"></div></div>
+      <div class="column"><h2>Electronics</h2><div id="electronics" class="grid"></div></div>
+      <div class="column"><h2>Home</h2><div id="home" class="grid"></div></div>
+      <div class="column"><h2>Stationery</h2><div id="stationery" class="grid"></div></div>
+    </section>
+
+    <section class="admin">
+      <h3>Add Product (Admin)</h3>
+      <input id="pName" placeholder="Product name"/>
+      <input id="pPrice" placeholder="Price (KES)" type="number"/>
+      <select id="pCat">
+        <option value="new">New</option>
+        <option value="utensils">Utensils</option>
+        <option value="electronics">Electronics</option>
+        <option value="home">Home</option>
+        <option value="stationery">Stationery</option>
+      </select>
+      <input id="pImg" placeholder="Image URL (public link)"/>
+      <button id="addProduct">Add</button>
+    </section>
+
+    <section class="cart hidden" id="cart">
+      <h3>Your Cart</h3>
+      <div id="cartItems"></div>
+      <div class="checkout">
+        <label>M-Pesa Number (editable):</label>
+        <input id="mpesa" value="0711493400"/>
+        <button id="clearCart">Clear Cart</button>
+      </div>
+      <p class="note">Checkout flow can be extended later (M-Pesa STK, delivery form, etc.).</p>
+    </section>
+  </main>
+
+  <footer><small>© <span id="year"></span> China Shop Kenya</small></footer>
+  <script src="app.js"></script>
+</body>
+</html>
