@@ -12,65 +12,66 @@
     <div class="brand">
       <img id="logoImg" src="logo.png" alt="China Shop Kenya logo" />
       <div>
-        <p class="eyebrow">Premium Collection</p>
         <h1>China Shop Kenya</h1>
       </div>
     </div>
 
     <div class="header-actions">
-      <input id="search" type="search" placeholder="Search electronics, utensils, decor..." />
+      <a href="landing.html" class="outline-btn">Discount Corner</a>
+      <input id="search" type="search" placeholder="Search products..." />
       <button id="viewCartBtn" class="outline-btn">Cart (<span id="cartCount">0</span>)</button>
     </div>
   </header>
 
-  <section class="banner" aria-label="Discount banner carousel">
-    <div class="banner-content">
-      <p class="eyebrow">Limited Offers</p>
-      <h2 id="bannerTitle">Weekly Discount Festival</h2>
-      <p id="bannerDescription">Save up to 40% on selected kitchen and electronics items.</p>
-      <div class="banner-actions">
-        <a href="landing.html" class="solid-btn">View Deals</a>
-        <button id="nextBanner" class="outline-btn">Next Slide</button>
-      </div>
-      <small id="bannerMeta" class="note"></small>
-    </div>
-    <a href="landing.html" class="banner-image-link" aria-label="Open deals landing page">
+  <section class="hero-wrap" aria-label="Discount banner carousel">
+    <a id="bannerLink" href="#" class="banner-image-link" aria-label="Open selected product category">
       <img id="bannerImg" src="banner.jpg" alt="Discount products on promotion" />
     </a>
+    <button id="nextBanner" class="banner-nav">Next Slide</button>
+    <small id="bannerMeta" class="banner-meta"></small>
   </section>
 
   <main class="container">
-    <section class="categories" aria-label="Horizontal category products">
-      <article class="category-row"><div class="category-head"><h3>Electronics</h3></div><div id="electronics" class="products-row"></div></article>
-      <article class="category-row"><div class="category-head"><h3>Utensils</h3></div><div id="utensils" class="products-row"></div></article>
-      <article class="category-row"><div class="category-head"><h3>Home & Decor</h3></div><div id="home" class="products-row"></div></article>
-      <article class="category-row"><div class="category-head"><h3>Beauty & Lifestyle</h3></div><div id="lifestyle" class="products-row"></div></article>
+    <section class="panel discount-tab">
+      <div class="panel-header">
+        <h3>Discount Tab</h3>
+        <a href="landing.html" class="solid-btn">Open Discount Corner</a>
+      </div>
+      <div id="discountList" class="deals-grid"></div>
     </section>
+
+    <section id="categories" class="categories" aria-label="Editable product categories"></section>
 
     <section class="panel admin">
       <h3>Admin Panel</h3>
-      <p class="note">Upload your own photos for products, banner and logo.</p>
 
       <div class="admin-grid">
+        <input id="newCategoryInput" placeholder="New category name"/>
+        <button id="addCategory" class="solid-btn">Add Category</button>
+      </div>
+
+      <div class="admin-grid banner-admin">
         <input id="pName" placeholder="Product name"/>
         <input id="pPrice" placeholder="Price (KES)" type="number"/>
-        <select id="pCat">
-          <option value="electronics">Electronics</option>
-          <option value="utensils">Utensils</option>
-          <option value="home">Home & Decor</option>
-          <option value="lifestyle">Beauty & Lifestyle</option>
-        </select>
+        <select id="pCat"></select>
         <input id="pImgFile" type="file" accept="image/*"/>
         <button id="addProduct" class="solid-btn">Add Product</button>
       </div>
 
       <div class="admin-grid banner-admin">
-        <input id="bannerTitleInput" placeholder="Banner title" />
-        <input id="bannerDescriptionInput" placeholder="Banner description" />
         <input id="bannerImageFileInput" type="file" accept="image/*" />
+        <select id="bannerTargetCat"></select>
         <button id="addBanner" class="outline-btn">Add Banner Slide</button>
         <input id="replaceBannerFileInput" type="file" accept="image/*" />
         <button id="replaceBannerImage" class="solid-btn">Replace Current Banner Image</button>
+      </div>
+
+      <div class="admin-grid banner-admin">
+        <input id="discountName" placeholder="Discount item name" />
+        <input id="discountPercent" placeholder="Discount %" type="number" />
+        <select id="discountCat"></select>
+        <input id="discountImgFile" type="file" accept="image/*" />
+        <button id="addDiscount" class="solid-btn">Add Discount</button>
       </div>
 
       <div class="admin-grid banner-admin">

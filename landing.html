@@ -3,40 +3,37 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>China Shop Kenya | Deals</title>
+  <title>China Shop Kenya | Discount Corner</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <header class="topbar">
     <a href="index.html" class="solid-btn">← Back to Shop</a>
-    <div class="brand">
-      <p class="eyebrow">Discount Center</p>
-      <h1>Hot Deals</h1>
-    </div>
+    <div class="brand"><h1>Discount Corner</h1></div>
   </header>
 
   <main class="container">
     <section class="panel">
-      <h2>Current Promotions</h2>
-      <p>Small product cards to match the front page look.</p>
+      <h2>All Discounts</h2>
+      <p>Discounts you add from the admin discount tab appear here.</p>
       <div class="deals-grid" id="deals"></div>
     </section>
   </main>
 
   <script>
-    const deals = JSON.parse(localStorage.getItem("products") || "[]");
-    const el = document.getElementById("deals");
+    const discounts = JSON.parse(localStorage.getItem('discounts') || '[]');
+    const el = document.getElementById('deals');
 
-    if (!deals.length) {
-      el.innerHTML = `<p class="note">No products yet. Add products from the main homepage admin section to show deals here.</p>`;
+    if (!discounts.length) {
+      el.innerHTML = '<p class="note">No discounts yet. Add discounts from homepage admin panel.</p>';
     } else {
-      el.innerHTML = deals.map((p) => `
+      el.innerHTML = discounts.map((d) => `
         <article class="card deal-card">
-          <img src="${p.img || 'banner.jpg'}" alt="${p.name}" />
-          <h4>${p.name}</h4>
-          <p>KES ${Number(p.price).toLocaleString()}</p>
+          <img src="${d.img || 'banner.jpg'}" alt="${d.name}" />
+          <h4>${d.name}</h4>
+          <p>${d.percent}% OFF · ${d.cat}</p>
         </article>
-      `).join("");
+      `).join('');
     }
   </script>
 </body>
