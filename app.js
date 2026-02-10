@@ -1,9 +1,9 @@
 const DEFAULT_CATEGORIES = ["Electronics", "Utensils", "Home & Decor", "Beauty & Lifestyle"];
 const DEFAULT_PRODUCTS = [
-  { id: "p1", name: "Bluetooth Speaker", price: 3200, cat: "electronics", img: "banner.jpg", description: "Portable speaker with clear sound for indoor and outdoor use.", manual: "Charge fully before first use. Keep away from water and direct flames." },
-  { id: "p2", name: "Air Fryer", price: 7800, cat: "electronics", img: "banner.jpg", description: "Compact air fryer with fast heat circulation and simple controls.", manual: "Preheat 3 minutes. Do not exceed basket max line. Clean basket after each use." },
-  { id: "p3", name: "Knife Set", price: 2450, cat: "utensils", img: "banner.jpg", description: "Multi-purpose kitchen knife set for slicing and chopping.", manual: "Hand wash and dry after use. Store safely in stand." },
-  { id: "p4", name: "Non-stick Pot", price: 3900, cat: "utensils", img: "banner.jpg", description: "Durable non-stick pot ideal for everyday meals.", manual: "Use medium heat and non-metal utensils to protect coating." },
+  { id: "p1", name: "Bluetooth Speaker", price: 3200, cat: "electronics", img: "banner.jpg", description: "Portable speaker with clear sound for indoor and outdoor use.", specifications: "Battery: 8h, Bluetooth 5.0, USB-C charging." },
+  { id: "p2", name: "Air Fryer", price: 7800, cat: "electronics", img: "banner.jpg", description: "Compact air fryer with fast heat circulation and simple controls.", specifications: "Capacity: 4L, Timer: 0-30 min, Temperature: 80-200°C." },
+  { id: "p3", name: "Knife Set", price: 2450, cat: "utensils", img: "banner.jpg", description: "Multi-purpose kitchen knife set for slicing and chopping.", specifications: "Stainless steel blades, ergonomic grip, set of 6." },
+  { id: "p4", name: "Non-stick Pot", price: 3900, cat: "utensils", img: "banner.jpg", description: "Durable non-stick pot ideal for everyday meals.", specifications: "24cm diameter, non-stick interior, glass lid included." },
 ];
 const DEFAULT_BANNERS = [{ image: "banner.jpg", targetCat: "electronics" }];
 const DEFAULT_SOCIALS = { facebook: "", instagram: "", tiktok: "", x: "", youtube: "" };
@@ -17,13 +17,14 @@ const state = {
   bannerIndex: Number(localStorage.getItem("bannerIndex") || 0),
   socials: JSON.parse(localStorage.getItem("socials") || "null") || DEFAULT_SOCIALS,
   logo: localStorage.getItem("logo") || "logo.png",
+  activeCategory: "all",
 };
 
 state.products = state.products.map((product, index) => ({
   ...product,
   id: product.id || `p-${Date.now()}-${index}`,
   description: product.description || "",
-  manual: product.manual || "",
+  specifications: product.specifications || product.manual || "",
 }));
 
 const categoryWrap = document.getElementById("categories");
@@ -62,21 +63,43 @@ function readImage(fileInput) {
 }
 
 function renderCategoryOptions() {
-  const catOptions = state.categories
-    .map((name) => `<option value="${slugify(name)}">${name}</option>`)
-    .join("");
+  const catOptions = state.categories.map((name) => `<option value="${slugify(name)}">${name}</option>`).join("");
   document.getElementById("pCat").innerHTML = catOptions;
   document.getElementById("bannerTargetCat").innerHTML = catOptions;
 }
 
+function setActiveCategory(categorySlug) {
+  state.activeCategory = categorySlug;
+  renderCategoryNav();
+  renderCategories();
+  renderProducts();
+
+  if (categorySlug !== "all") {
+    const section = document.getElementById(`cat-${categorySlug}`);
+    section?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
 function renderCategoryNav() {
-  categoryNavLinks.innerHTML = state.categories
-    .map((name) => `<a href="#cat-${slugify(name)}">${name}</a>`)
-    .join("");
+  const allTab = `<button class="cat-tab ${state.activeCategory === "all" ? "active" : ""}" data-cat="all">All</button>`;
+  const tabs = state.categories.map((name) => {
+    const slug = slugify(name);
+    const active = state.activeCategory === slug ? "active" : "";
+    return `<button class="cat-tab ${active}" data-cat="${slug}">${name}</button>`;
+  }).join("");
+
+  categoryNavLinks.innerHTML = allTab + tabs;
+  categoryNavLinks.querySelectorAll(".cat-tab").forEach((tab) => {
+    tab.onclick = () => setActiveCategory(tab.dataset.cat);
+  });
 }
 
 function renderCategories() {
-  categoryWrap.innerHTML = state.categories
+  const visibleCategories = state.activeCategory === "all"
+    ? state.categories
+    : state.categories.filter((name) => slugify(name) === state.activeCategory);
+
+  categoryWrap.innerHTML = visibleCategories
     .map((name) => `
       <article class="category-row" id="cat-${slugify(name)}">
         <div class="category-head"><h3>${name}</h3></div>
@@ -124,6 +147,10 @@ function renderBanner() {
   const active = state.banners[safeIndex];
   bannerImg.src = active.image;
   bannerLink.href = `#cat-${active.targetCat}`;
+  bannerLink.onclick = (event) => {
+    event.preventDefault();
+    setActiveCategory(active.targetCat);
+  };
   bannerMeta.textContent = `Banner ${safeIndex + 1} of ${state.banners.length} · Target: ${active.targetCat}`;
 }
 
@@ -157,9 +184,7 @@ document.getElementById("addCategory").onclick = () => {
   document.getElementById("newCategoryInput").value = "";
   save();
   renderCategoryOptions();
-  renderCategoryNav();
-  renderCategories();
-  renderProducts();
+  setActiveCategory(slugify(value));
 };
 
 document.getElementById("addProduct").onclick = async () => {
@@ -167,16 +192,16 @@ document.getElementById("addProduct").onclick = async () => {
   const price = Number(document.getElementById("pPrice").value);
   const cat = document.getElementById("pCat").value;
   const description = document.getElementById("pDescription").value.trim();
-  const manual = document.getElementById("pManual").value.trim();
+  const specifications = document.getElementById("pSpecifications").value.trim();
   const fileInput = document.getElementById("pImgFile");
   if (!name || !price || !cat || !fileInput.files.length) return alert("Please enter product name, price, category and upload a product photo.");
 
   const img = await readImage(fileInput);
-  state.products.unshift({ id: `p${Date.now()}`, name, price, cat, img, description, manual });
+  state.products.unshift({ id: `p${Date.now()}`, name, price, cat, img, description, specifications });
   document.getElementById("pName").value = "";
   document.getElementById("pPrice").value = "";
   document.getElementById("pDescription").value = "";
-  document.getElementById("pManual").value = "";
+  document.getElementById("pSpecifications").value = "";
   fileInput.value = "";
   save();
   renderProducts();

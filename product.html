@@ -34,8 +34,8 @@
             <p class="total">KES ${Number(product.price).toLocaleString()}</p>
             <h3>Description</h3>
             <p>${product.description || 'No description added yet.'}</p>
-            <h3>Product Manual</h3>
-            <p>${product.manual || 'No manual added yet.'}</p>
+            <h3>Specifications</h3>
+            <p>${product.specifications || product.manual || 'No specifications added yet.'}</p>
           </div>
         </div>
       `;

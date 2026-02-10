@@ -56,7 +56,7 @@ input, select {
   gap: 10px;
   overflow-x: auto;
 }
-.category-nav-links a {
+.category-nav-links .cat-tab {
   color: #1a2220;
   text-decoration: none;
   font-weight: 700;
@@ -65,6 +65,12 @@ input, select {
   border-radius: 999px;
   padding: 10px 14px;
   white-space: nowrap;
+  cursor: pointer;
+}
+.cat-tab.active {
+  background: #0f7a43;
+  color: #fff;
+  border-color: #0f7a43;
 }
 textarea {
   border: 1px solid #d5e8dd;
