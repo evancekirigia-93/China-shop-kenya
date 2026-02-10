@@ -3,34 +3,38 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>China Shop Kenya – Deals</title>
+  <title>China Shop Kenya | Discount Corner</title>
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <header class="topbar">
-    <a href="index.html" class="back">← Back to Shop</a>
-    <h1>Hot Deals & Discounts</h1>
+    <a href="index.html" class="solid-btn">← Back to Shop</a>
+    <div class="brand"><h1>Discount Corner</h1></div>
   </header>
+
   <main class="container">
-    <div class="deal-hero">
-      <img src="banner.jpg" alt="Deals"/>
-      <div class="deal-text">
-        <h2>Weekly Discounts</h2>
-        <p>Update this page anytime with new offers.</p>
-      </div>
-    </div>
-    <div class="grid" id="deals"></div>
+    <section class="panel">
+      <h2>All Discounts</h2>
+      <p>Saved discounts appear here.</p>
+      <div class="deals-grid" id="deals"></div>
+    </section>
   </main>
+
   <script>
-    const deals = JSON.parse(localStorage.getItem("products")||"[]").filter(p=>p.onSale);
-    const el = document.getElementById("deals");
-    el.innerHTML = deals.map(p=>`
-      <div class="card">
-        <img src="${p.img || 'https://via.placeholder.com/300x200?text=Product'}" />
-        <h4>${p.name}</h4>
-        <p>KES ${p.price}</p>
-      </div>
-    `).join("");
+    const discounts = JSON.parse(localStorage.getItem('discounts') || '[]');
+    const el = document.getElementById('deals');
+
+    if (!discounts.length) {
+      el.innerHTML = '<p class="note">No discounts yet.</p>';
+    } else {
+      el.innerHTML = discounts.map((d) => `
+        <article class="card deal-card">
+          <img src="${d.img || 'banner.jpg'}" alt="${d.name}" />
+          <h4>${d.name}</h4>
+          <p>${d.percent}% OFF · ${d.cat}</p>
+        </article>
+      `).join('');
+    }
   </script>
 </body>
 </html>

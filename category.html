@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>China Shop Kenya | Category</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="solid-btn">← Back to Shop</a>
+    <div class="brand"><h1 id="catTitle">Category</h1></div>
+    <button id="openBasketBtn" class="outline-btn">Basket (<span id="basketCount">0</span>)</button>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <div id="categoryProducts" class="products-row"></div>
+    </section>
+  </main>
+
+  <div id="cartDrawerBackdrop" class="cart-drawer-backdrop" hidden></div>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Basket" aria-hidden="true">
+    <div class="cart-drawer-head">
+      <h3>Basket</h3>
+      <button id="closeCartDrawer" class="icon-btn" aria-label="Close basket">✕</button>
+    </div>
+    <div id="drawerItems" class="drawer-items"></div>
+    <div class="cart-drawer-footer">
+      <p class="total">Subtotal: KES <span id="drawerSubtotal">0</span></p>
+      <a href="cart.html" class="outline-btn">View basket</a>
+    </div>
+  </aside>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('cat') || '';
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    const categories = JSON.parse(localStorage.getItem('categories') || '[]');
+    const host = document.getElementById('categoryProducts');
+    const title = document.getElementById('catTitle');
+    const basketCount = document.getElementById('basketCount');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartDrawerBackdrop = document.getElementById('cartDrawerBackdrop');
+    const drawerItems = document.getElementById('drawerItems');
+    const drawerSubtotal = document.getElementById('drawerSubtotal');
+
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cart') || '[]');
+    }
+
+    function updateBasketCount() {
+      basketCount.textContent = String(getCart().length);
+    }
+
+    function renderDrawer() {
+      const cart = getCart();
+      if (!cart.length) {
+        drawerItems.innerHTML = '<p class="note">Your basket is empty. Add products to see them here.</p>';
+        drawerSubtotal.textContent = '0';
+        return;
+      }
+      drawerItems.innerHTML = cart.map((item, i) => `
+        <article class="drawer-item-row">
+          <img src="${item.img || 'banner.jpg'}" alt="${item.name}" />
+          <div class="drawer-item-details">
+            <strong>${item.name}</strong>
+            <p>KES ${Number(item.price).toLocaleString()}</p>
+          </div>
+          <button class="outline-btn" onclick="removeDrawerItem(${i})">Remove</button>
+        </article>
+      `).join('');
+      drawerSubtotal.textContent = cart.reduce((sum, item) => sum + Number(item.price || 0), 0).toLocaleString();
+    }
+
+    function openDrawer() {
+      renderDrawer();
+      cartDrawer.removeAttribute('aria-hidden');
+      cartDrawer.classList.add('open');
+      cartDrawerBackdrop.hidden = false;
+    }
+
+    function closeDrawer() {
+      cartDrawer.setAttribute('aria-hidden', 'true');
+      cartDrawer.classList.remove('open');
+      cartDrawerBackdrop.hidden = true;
+    }
+
+    const categoryName = categories.find((name) =>
+      name.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') === cat,
+    ) || 'Category';
+
+    title.textContent = categoryName;
+
+    const items = products.filter((p) => p.cat === cat);
+    if (!items.length) {
+      host.innerHTML = '<p class="note">No products in this category yet.</p>';
+    } else {
+      host.innerHTML = items.map((p) => `
+        <article class="card">
+          <a class="product-link" href="product.html?id=${p.id}"><img src="${p.img || 'banner.jpg'}" alt="${p.name}" /></a>
+          <a class="product-link" href="product.html?id=${p.id}"><h4>${p.name}</h4></a>
+          <p>KES ${Number(p.price).toLocaleString()}</p>
+          <button class="solid-btn" onclick="addToCart('${p.id}')">Add to basket</button>
+        </article>
+      `).join('');
+    }
+
+    window.addToCart = (id) => {
+      const selected = products.find((p) => p.id === id);
+      if (!selected) return;
+      const cart = getCart();
+      cart.push(selected);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateBasketCount();
+      openDrawer();
+    };
+
+    window.removeDrawerItem = (index) => {
+      const cart = getCart();
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateBasketCount();
+      renderDrawer();
+    };
+
+    document.getElementById('openBasketBtn').onclick = openDrawer;
+    document.getElementById('closeCartDrawer').onclick = closeDrawer;
+    cartDrawerBackdrop.onclick = closeDrawer;
+
+    updateBasketCount();
+    renderDrawer();
+  </script>
+</body>
+</html>

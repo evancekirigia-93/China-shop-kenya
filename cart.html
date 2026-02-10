@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>China Shop Kenya | Cart</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="solid-btn">← Add More Products</a>
+    <div class="brand"><h1>Your Cart</h1></div>
+    <button id="clearCart" class="outline-btn">Clear Cart</button>
+  </header>
+
+  <main class="container">
+    <section class="panel">
+      <div id="cartItems" class="cart-items"></div>
+      <p class="total">Total: KES <span id="cartTotal">0</span></p>
+
+      <div class="checkout">
+        <div class="checkout-row">
+          <label for="mpesaPhone">M-Pesa Phone Number</label>
+          <input id="mpesaPhone" value="07XXXXXXXX" />
+        </div>
+        <div class="checkout-row">
+          <label for="mpesaTill">Till / Paybill Number</label>
+          <input id="mpesaTill" value="174379" />
+        </div>
+        <div class="checkout-row">
+          <label for="mpesaApi">M-Pesa STK backend URL (optional)</label>
+          <input id="mpesaApi" placeholder="https://your-backend.example.com/mpesa/stkpush" />
+        </div>
+        <button id="payMpesa" class="solid-btn">Pay with M-Pesa</button>
+        <p class="note" id="paymentNote">Connect your Daraja backend URL for live STK push or use fallback guide.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const state = { cart: JSON.parse(localStorage.getItem('cart') || '[]') };
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    const paymentNote = document.getElementById('paymentNote');
+
+    function save() {
+      localStorage.setItem('cart', JSON.stringify(state.cart));
+    }
+
+    function render() {
+      const total = state.cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
+      cartTotal.textContent = total.toLocaleString();
+
+      if (!state.cart.length) {
+        cartItems.innerHTML = '<p class="note">Your cart is empty. Click "Add More Products" to continue shopping.</p>';
+        return;
+      }
+
+      cartItems.innerHTML = state.cart.map((item, i) => `
+        <div class="cart-item-row">
+          <img src="${item.img || 'banner.jpg'}" alt="${item.name}" />
+          <div class="cart-details">
+            <strong>${item.name}</strong>
+            <p>KES ${Number(item.price).toLocaleString()}</p>
+          </div>
+          <button class="outline-btn" onclick="removeItem(${i})">Remove</button>
+        </div>
+      `).join('');
+    }
+
+    window.removeItem = (index) => {
+      state.cart.splice(index, 1);
+      save();
+      render();
+    };
+
+    document.getElementById('clearCart').onclick = () => {
+      state.cart = [];
+      save();
+      render();
+    };
+
+    document.getElementById('payMpesa').onclick = async () => {
+      const phone = document.getElementById('mpesaPhone').value.trim();
+      const till = document.getElementById('mpesaTill').value.trim();
+      const apiUrl = document.getElementById('mpesaApi').value.trim();
+      const total = state.cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
+
+      if (!state.cart.length) {
+        paymentNote.textContent = 'Add products before paying.';
+        return;
+      }
+
+      if (apiUrl) {
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, till, amount: total, cart: state.cart }),
+          });
+          if (!response.ok) throw new Error('Failed STK');
+          paymentNote.textContent = 'STK push sent. Check your phone.';
+          return;
+        } catch (error) {
+          paymentNote.textContent = 'Unable to reach STK backend. Using fallback now.';
+        }
+      }
+
+      const message = encodeURIComponent(`Hello China Shop Kenya, I want to pay KES ${total.toLocaleString()} via M-Pesa. Number: ${phone}. Till/Paybill: ${till}.`);
+      window.open(`https://wa.me/?text=${message}`, '_blank');
+      paymentNote.textContent = `Fallback opened. Complete M-Pesa payment to ${till} and share confirmation.`;
+    };
+
+    render();
+  </script>
+</body>
+</html>
