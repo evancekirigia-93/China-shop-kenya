@@ -18,8 +18,8 @@
   <main class="container">
     <section class="panel">
       <h2>Current Promotions</h2>
-      <p>These offers are loaded directly from products saved in your main store page.</p>
-      <div class="grid" id="deals"></div>
+      <p>Small product cards to match the front page look.</p>
+      <div class="deals-grid" id="deals"></div>
     </section>
   </main>
 
@@ -31,8 +31,8 @@
       el.innerHTML = `<p class="note">No products yet. Add products from the main homepage admin section to show deals here.</p>`;
     } else {
       el.innerHTML = deals.map((p) => `
-        <article class="card">
-          <img src="${p.img || 'https://via.placeholder.com/300x200?text=Product'}" alt="${p.name}" />
+        <article class="card deal-card">
+          <img src="${p.img || 'banner.jpg'}" alt="${p.name}" />
           <h4>${p.name}</h4>
           <p>KES ${Number(p.price).toLocaleString()}</p>
         </article>

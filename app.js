@@ -9,14 +9,7 @@ const DEFAULT_PRODUCTS = [
   { name: "Grooming Kit", price: 2100, cat: "lifestyle", img: "banner.jpg" },
 ];
 
-const DEFAULT_BANNERS = [
-  {
-    title: "Weekly Discount Festival",
-    description: "Save up to 40% on selected kitchen and electronics items.",
-    image: "banner.jpg",
-  },
-];
-
+const DEFAULT_BANNERS = [{ title: "Weekly Discount Festival", description: "Save up to 40% on selected kitchen and electronics items.", image: "banner.jpg" }];
 const DEFAULT_SOCIALS = { facebook: "", instagram: "", tiktok: "", x: "", youtube: "" };
 
 const state = {
@@ -35,15 +28,11 @@ const grids = {
   lifestyle: document.getElementById("lifestyle"),
 };
 
-const cartEl = document.getElementById("cart");
-const cartItems = document.getElementById("cartItems");
 const cartCount = document.getElementById("cartCount");
-const cartTotal = document.getElementById("cartTotal");
 const bannerTitle = document.getElementById("bannerTitle");
 const bannerDescription = document.getElementById("bannerDescription");
 const bannerImg = document.getElementById("bannerImg");
 const bannerMeta = document.getElementById("bannerMeta");
-const paymentNote = document.getElementById("paymentNote");
 const logoImg = document.getElementById("logoImg");
 const socialLinks = document.getElementById("socialLinks");
 
@@ -59,10 +48,7 @@ function save() {
 function readImage(fileInput) {
   return new Promise((resolve, reject) => {
     const file = fileInput.files[0];
-    if (!file) {
-      reject(new Error("No file selected"));
-      return;
-    }
+    if (!file) return reject(new Error("No file selected"));
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(new Error("Failed to read image file"));
@@ -71,10 +57,7 @@ function readImage(fileInput) {
 }
 
 function renderProducts() {
-  Object.values(grids).forEach((grid) => {
-    grid.innerHTML = "";
-  });
-
+  Object.values(grids).forEach((grid) => { grid.innerHTML = ""; });
   const query = (document.getElementById("search").value || "").trim().toLowerCase();
   const filtered = state.products.filter((p) => p.name.toLowerCase().includes(query));
 
@@ -91,32 +74,11 @@ function renderProducts() {
     card.querySelector("button").onclick = () => {
       state.cart.push(product);
       save();
-      renderCart();
+      cartCount.textContent = String(state.cart.length);
     };
 
     grids[product.cat]?.appendChild(card);
   });
-}
-
-function renderCart() {
-  cartCount.textContent = String(state.cart.length);
-  const total = state.cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
-  cartTotal.textContent = total.toLocaleString();
-
-  cartItems.innerHTML = state.cart
-    .map(
-      (item, i) => `
-      <div class="cart-item-row">
-        <img src="${item.img || "banner.jpg"}" alt="${item.name}" />
-        <div class="cart-details">
-          <strong>${item.name}</strong>
-          <p>KES ${Number(item.price).toLocaleString()}</p>
-        </div>
-        <button class="outline-btn" onclick="removeFromCart(${i})">Remove</button>
-      </div>
-    `,
-    )
-    .join("");
 }
 
 function renderBanner() {
@@ -135,10 +97,7 @@ function renderSocialLinks() {
     socialLinks.innerHTML = '<span class="note">Add your social links from the admin panel.</span>';
     return;
   }
-
-  socialLinks.innerHTML = entries
-    .map(([name, link]) => `<a href="${link}" target="_blank" rel="noopener noreferrer">${name.toUpperCase()}</a>`)
-    .join("");
+  socialLinks.innerHTML = entries.map(([name, link]) => `<a href="${link}" target="_blank" rel="noopener noreferrer">${name.toUpperCase()}</a>`).join("");
 }
 
 function hydrateSocialInputs() {
@@ -149,14 +108,8 @@ function hydrateSocialInputs() {
   document.getElementById("youtubeInput").value = state.socials.youtube || "";
 }
 
-window.removeFromCart = (index) => {
-  state.cart.splice(index, 1);
-  save();
-  renderCart();
-};
-
 document.getElementById("viewCartBtn").onclick = () => {
-  cartEl.classList.toggle("hidden");
+  window.open("cart.html", "_blank", "noopener");
 };
 
 document.getElementById("addProduct").onclick = async () => {
@@ -164,19 +117,13 @@ document.getElementById("addProduct").onclick = async () => {
   const price = Number(document.getElementById("pPrice").value);
   const cat = document.getElementById("pCat").value;
   const fileInput = document.getElementById("pImgFile");
-
-  if (!name || !price || !cat || !fileInput.files.length) {
-    alert("Please enter product name, price, category and upload a product photo.");
-    return;
-  }
+  if (!name || !price || !cat || !fileInput.files.length) return alert("Please enter product name, price, category and upload a product photo.");
 
   const img = await readImage(fileInput);
   state.products.unshift({ name, price, cat, img });
-
   document.getElementById("pName").value = "";
   document.getElementById("pPrice").value = "";
   fileInput.value = "";
-
   save();
   renderProducts();
 };
@@ -185,30 +132,22 @@ document.getElementById("addBanner").onclick = async () => {
   const title = document.getElementById("bannerTitleInput").value.trim();
   const description = document.getElementById("bannerDescriptionInput").value.trim();
   const bannerFileInput = document.getElementById("bannerImageFileInput");
-
-  if (!title || !description || !bannerFileInput.files.length) {
-    alert("Add banner title, description and upload an image.");
-    return;
-  }
+  if (!title || !description || !bannerFileInput.files.length) return alert("Add banner title, description and upload an image.");
 
   const image = await readImage(bannerFileInput);
   state.banners.push({ title, description, image });
   state.bannerIndex = state.banners.length - 1;
-
   document.getElementById("bannerTitleInput").value = "";
   document.getElementById("bannerDescriptionInput").value = "";
   bannerFileInput.value = "";
-
   save();
   renderBanner();
 };
 
 document.getElementById("replaceBannerImage").onclick = async () => {
   const replaceBannerFileInput = document.getElementById("replaceBannerFileInput");
-  if (!replaceBannerFileInput.files.length) {
-    alert("Upload an image to replace current banner slide.");
-    return;
-  }
+  if (!replaceBannerFileInput.files.length) return alert("Upload an image to replace current banner slide.");
+
   const image = await readImage(replaceBannerFileInput);
   const safeIndex = ((state.bannerIndex % state.banners.length) + state.banners.length) % state.banners.length;
   state.banners[safeIndex].image = image;
@@ -219,10 +158,7 @@ document.getElementById("replaceBannerImage").onclick = async () => {
 
 document.getElementById("saveLogo").onclick = async () => {
   const logoFileInput = document.getElementById("logoFileInput");
-  if (!logoFileInput.files.length) {
-    alert("Upload a logo image first.");
-    return;
-  }
+  if (!logoFileInput.files.length) return alert("Upload a logo image first.");
 
   state.logo = await readImage(logoFileInput);
   logoImg.src = state.logo;
@@ -238,7 +174,6 @@ document.getElementById("saveSocial").onclick = () => {
     x: document.getElementById("xInput").value.trim(),
     youtube: document.getElementById("youtubeInput").value.trim(),
   };
-
   save();
   renderSocialLinks();
 };
@@ -249,50 +184,7 @@ document.getElementById("nextBanner").onclick = () => {
   renderBanner();
 };
 
-document.getElementById("clearCart").onclick = () => {
-  state.cart = [];
-  save();
-  renderCart();
-};
-
 document.getElementById("search").oninput = renderProducts;
-
-document.getElementById("payMpesa").onclick = async () => {
-  const phone = document.getElementById("mpesaPhone").value.trim();
-  const till = document.getElementById("mpesaTill").value.trim();
-  const apiUrl = document.getElementById("mpesaApi").value.trim();
-  const total = state.cart.reduce((sum, item) => sum + Number(item.price || 0), 0);
-
-  if (!state.cart.length) {
-    paymentNote.textContent = "Add products to cart before starting M-Pesa payment.";
-    return;
-  }
-
-  if (apiUrl) {
-    try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, till, amount: total, cart: state.cart }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to trigger STK push");
-      }
-
-      paymentNote.textContent = "STK push sent. Check your phone to complete M-Pesa payment.";
-      return;
-    } catch (error) {
-      paymentNote.textContent = "Unable to reach STK backend. Using fallback payment guidance below.";
-    }
-  }
-
-  const message = encodeURIComponent(
-    `Hello China Shop Kenya, I want to pay KES ${total.toLocaleString()} via M-Pesa. My number is ${phone}. Till/Paybill: ${till}.`,
-  );
-  window.open(`https://wa.me/?text=${message}`, "_blank");
-  paymentNote.textContent = `Fallback opened. Complete M-Pesa payment to Till/Paybill ${till} then share your confirmation message.`;
-};
 
 setInterval(() => {
   state.bannerIndex += 1;
@@ -302,9 +194,9 @@ setInterval(() => {
 
 document.getElementById("year").textContent = new Date().getFullYear();
 logoImg.src = state.logo;
+cartCount.textContent = String(state.cart.length);
 hydrateSocialInputs();
 renderProducts();
-renderCart();
 renderBanner();
 renderSocialLinks();
 save();
