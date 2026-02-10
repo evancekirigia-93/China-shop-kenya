@@ -78,12 +78,18 @@ function renderCategoryNav() {
 
 function renderCategories() {
   categoryWrap.innerHTML = state.categories
-    .map((name) => `
-      <article class="category-row" id="cat-${slugify(name)}">
-        <div class="category-head"><h3>${name}</h3></div>
-        <div class="products-row" data-cat="${slugify(name)}"></div>
+    .map((name) => {
+      const slug = slugify(name);
+      return `
+      <article class="category-row" id="cat-${slug}">
+        <a class="category-head" href="category.html?cat=${slug}">
+          <h3>${name}</h3>
+          <span>Open Category →</span>
+        </a>
+        <div class="products-row" data-cat="${slug}"></div>
       </article>
-    `)
+    `;
+    })
     .join("");
 }
 

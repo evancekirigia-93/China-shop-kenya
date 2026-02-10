@@ -156,7 +156,18 @@ textarea {
 .container { width: min(1320px, calc(100% - 30px)); margin: 0 auto 24px; }
 .categories { display: grid; gap: 14px; }
 .category-row { background: var(--white); border-radius: 16px; border: 1px solid #e0ece5; padding: 14px; box-shadow: var(--shadow); }
-.category-head h3 { margin: 0 0 10px; color: var(--green-900); font-size: 1.35rem; text-transform: capitalize; }
+.category-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 10px;
+  text-decoration: none;
+}
+.category-head h3 { margin: 0; color: var(--green-900); font-size: 1.35rem; text-transform: capitalize; }
+.category-head span { color: var(--green-700); font-weight: 700; white-space: nowrap; }
+.category-head:hover h3 { text-decoration: underline; }
+
 .products-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; scroll-snap-type: x mandatory; }
 .products-row .card { min-width: 245px; max-width: 245px; scroll-snap-align: start; }
 
