@@ -19,7 +19,7 @@
     <div class="header-actions">
       <a href="landing.html" class="outline-btn">Discount Corner</a>
       <input id="search" type="search" placeholder="Search products..." />
-      <button id="viewCartBtn" class="outline-btn">Cart (<span id="cartCount">0</span>)</button>
+      <button id="viewCartBtn" class="outline-btn">Basket (<span id="cartCount">0</span>)</button>
     </div>
   </header>
 
@@ -85,6 +85,19 @@
     <div id="socialLinks" class="social-links"></div>
     <small>© <span id="year"></span> China Shop Kenya · Premium green & white storefront ready for GitHub Pages.</small>
   </footer>
+
+  <div id="cartDrawerBackdrop" class="cart-drawer-backdrop" hidden></div>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Basket" aria-hidden="true">
+    <div class="cart-drawer-head">
+      <h3>Basket</h3>
+      <button id="closeCartDrawer" class="icon-btn" aria-label="Close basket">✕</button>
+    </div>
+    <div id="drawerItems" class="drawer-items"></div>
+    <div class="cart-drawer-footer">
+      <p class="total">Subtotal: KES <span id="drawerSubtotal">0</span></p>
+      <a href="cart.html" class="outline-btn">View basket</a>
+    </div>
+  </aside>
 
   <script src="app.js"></script>
 </body>

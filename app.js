@@ -34,6 +34,62 @@ const bannerLink = document.getElementById("bannerLink");
 const bannerMeta = document.getElementById("bannerMeta");
 const logoImg = document.getElementById("logoImg");
 const socialLinks = document.getElementById("socialLinks");
+const cartDrawer = document.getElementById("cartDrawer");
+const cartDrawerBackdrop = document.getElementById("cartDrawerBackdrop");
+const drawerItems = document.getElementById("drawerItems");
+const drawerSubtotal = document.getElementById("drawerSubtotal");
+
+function syncCartCount() {
+  cartCount.textContent = String(state.cart.length);
+}
+
+function saveCart() {
+  localStorage.setItem("cart", JSON.stringify(state.cart));
+  syncCartCount();
+}
+
+function renderCartDrawer() {
+  if (!drawerItems || !drawerSubtotal) return;
+  if (!state.cart.length) {
+    drawerItems.innerHTML = '<p class="note">Your basket is empty. Add products to see them here.</p>';
+    drawerSubtotal.textContent = "0";
+    return;
+  }
+
+  drawerItems.innerHTML = state.cart
+    .map(
+      (item, index) => `
+      <article class="drawer-item-row">
+        <img src="${item.img || "banner.jpg"}" alt="${item.name}" />
+        <div class="drawer-item-details">
+          <strong>${item.name}</strong>
+          <p>KES ${Number(item.price).toLocaleString()}</p>
+        </div>
+        <button class="outline-btn" data-remove-drawer="${index}">Remove</button>
+      </article>
+    `,
+    )
+    .join("");
+
+  drawerSubtotal.textContent = state.cart
+    .reduce((sum, item) => sum + Number(item.price || 0), 0)
+    .toLocaleString();
+}
+
+function openCartDrawer() {
+  if (!cartDrawer || !cartDrawerBackdrop) return;
+  renderCartDrawer();
+  cartDrawer.removeAttribute("aria-hidden");
+  cartDrawer.classList.add("open");
+  cartDrawerBackdrop.hidden = false;
+}
+
+function closeCartDrawer() {
+  if (!cartDrawer || !cartDrawerBackdrop) return;
+  cartDrawer.setAttribute("aria-hidden", "true");
+  cartDrawer.classList.remove("open");
+  cartDrawerBackdrop.hidden = true;
+}
 
 function slugify(value) {
   return value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -43,7 +99,7 @@ function save() {
   localStorage.setItem("categories", JSON.stringify(state.categories));
   localStorage.setItem("products", JSON.stringify(state.products));
   localStorage.setItem("discounts", JSON.stringify(state.discounts));
-  localStorage.setItem("cart", JSON.stringify(state.cart));
+  saveCart();
   localStorage.setItem("banners", JSON.stringify(state.banners));
   localStorage.setItem("bannerIndex", String(state.bannerIndex));
   localStorage.setItem("socials", JSON.stringify(state.socials));
@@ -115,8 +171,9 @@ function renderProducts() {
 
     card.querySelector("button").onclick = () => {
       state.cart.push(product);
-      save();
-      cartCount.textContent = String(state.cart.length);
+      saveCart();
+      renderCartDrawer();
+      openCartDrawer();
     };
     row.appendChild(card);
   });
@@ -148,8 +205,19 @@ function hydrateSocialInputs() {
   document.getElementById("youtubeInput").value = state.socials.youtube || "";
 }
 
-document.getElementById("viewCartBtn").onclick = () => {
-  window.open("cart.html", "_blank", "noopener");
+document.getElementById("viewCartBtn").onclick = openCartDrawer;
+
+document.getElementById("closeCartDrawer").onclick = closeCartDrawer;
+cartDrawerBackdrop.onclick = closeCartDrawer;
+
+drawerItems.onclick = (event) => {
+  const removeBtn = event.target.closest("[data-remove-drawer]");
+  if (!removeBtn) return;
+  const index = Number(removeBtn.getAttribute("data-remove-drawer"));
+  if (Number.isNaN(index)) return;
+  state.cart.splice(index, 1);
+  saveCart();
+  renderCartDrawer();
 };
 
 document.getElementById("addCategory").onclick = () => {
@@ -249,7 +317,7 @@ setInterval(() => {
 
 document.getElementById("year").textContent = new Date().getFullYear();
 logoImg.src = state.logo;
-cartCount.textContent = String(state.cart.length);
+syncCartCount();
 hydrateSocialInputs();
 renderCategoryOptions();
 renderCategoryNav();
@@ -257,4 +325,5 @@ renderCategories();
 renderProducts();
 renderBanner();
 renderSocialLinks();
+renderCartDrawer();
 save();

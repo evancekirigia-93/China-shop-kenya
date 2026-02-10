@@ -10,11 +10,25 @@
   <header class="topbar">
     <a href="index.html" class="solid-btn">← Back to Shop</a>
     <div class="brand"><h1>Product Details</h1></div>
+    <button id="openBasketBtn" class="outline-btn">Basket (<span id="basketCount">0</span>)</button>
   </header>
 
   <main class="container">
     <section class="panel product-details" id="productDetails"></section>
   </main>
+
+  <div id="cartDrawerBackdrop" class="cart-drawer-backdrop" hidden></div>
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Basket" aria-hidden="true">
+    <div class="cart-drawer-head">
+      <h3>Basket</h3>
+      <button id="closeCartDrawer" class="icon-btn" aria-label="Close basket">✕</button>
+    </div>
+    <div id="drawerItems" class="drawer-items"></div>
+    <div class="cart-drawer-footer">
+      <p class="total">Subtotal: KES <span id="drawerSubtotal">0</span></p>
+      <a href="cart.html" class="outline-btn">View basket</a>
+    </div>
+  </aside>
 
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -22,6 +36,61 @@
     const products = JSON.parse(localStorage.getItem('products') || '[]');
     const product = products.find((p) => p.id === id);
     const host = document.getElementById('productDetails');
+    const basketCount = document.getElementById('basketCount');
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartDrawerBackdrop = document.getElementById('cartDrawerBackdrop');
+    const drawerItems = document.getElementById('drawerItems');
+    const drawerSubtotal = document.getElementById('drawerSubtotal');
+
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cart') || '[]');
+    }
+
+    function updateBasketCount() {
+      basketCount.textContent = String(getCart().length);
+    }
+
+    function renderDrawer() {
+      const cart = getCart();
+      if (!cart.length) {
+        drawerItems.innerHTML = '<p class="note">Your basket is empty. Add products to see them here.</p>';
+        drawerSubtotal.textContent = '0';
+        return;
+      }
+      drawerItems.innerHTML = cart.map((item, i) => `
+        <article class="drawer-item-row">
+          <img src="${item.img || 'banner.jpg'}" alt="${item.name}" />
+          <div class="drawer-item-details">
+            <strong>${item.name}</strong>
+            <p>KES ${Number(item.price).toLocaleString()}</p>
+          </div>
+          <button class="outline-btn" onclick="removeDrawerItem(${i})">Remove</button>
+        </article>
+      `).join('');
+      drawerSubtotal.textContent = cart.reduce((sum, item) => sum + Number(item.price || 0), 0).toLocaleString();
+    }
+
+    function openDrawer() {
+      renderDrawer();
+      cartDrawer.removeAttribute('aria-hidden');
+      cartDrawer.classList.add('open');
+      cartDrawerBackdrop.hidden = false;
+    }
+
+    function closeDrawer() {
+      cartDrawer.setAttribute('aria-hidden', 'true');
+      cartDrawer.classList.remove('open');
+      cartDrawerBackdrop.hidden = true;
+    }
+
+    function addCurrentProductToCart() {
+      if (!product) return;
+      const cart = getCart();
+      cart.push(product);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateBasketCount();
+      openDrawer();
+    }
 
     if (!product) {
       host.innerHTML = '<p class="note">Product not found. Go back and select a product again.</p>';
@@ -36,10 +105,27 @@
             <p>${product.description || 'No description added yet.'}</p>
             <h3>Specifications</h3>
             <p>${product.specifications || product.manual || 'No specifications added yet.'}</p>
+            <button id="addCurrentProductBtn" class="solid-btn">Add to basket</button>
           </div>
         </div>
       `;
+      document.getElementById('addCurrentProductBtn').onclick = addCurrentProductToCart;
     }
+
+    window.removeDrawerItem = (index) => {
+      const cart = getCart();
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      updateBasketCount();
+      renderDrawer();
+    };
+
+    document.getElementById('openBasketBtn').onclick = openDrawer;
+    document.getElementById('closeCartDrawer').onclick = closeDrawer;
+    cartDrawerBackdrop.onclick = closeDrawer;
+
+    updateBasketCount();
+    renderDrawer();
   </script>
 </body>
 </html>
