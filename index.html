@@ -30,41 +30,21 @@
       <p id="bannerDescription">Save up to 40% on selected kitchen and electronics items.</p>
       <div class="banner-actions">
         <a href="landing.html" class="solid-btn">View Deals</a>
-        <button id="nextBanner" class="outline-btn">Change Banner</button>
+        <button id="nextBanner" class="outline-btn">Next Slide</button>
       </div>
+      <small id="bannerMeta" class="note"></small>
     </div>
-    <img id="bannerImg" src="banner.jpg" alt="Discount products on promotion" />
+    <a href="landing.html" class="banner-image-link" aria-label="Open deals landing page">
+      <img id="bannerImg" src="banner.jpg" alt="Discount products on promotion" />
+    </a>
   </section>
 
   <main class="container">
     <section class="categories" aria-label="Horizontal category products">
-      <article class="category-row">
-        <div class="category-head">
-          <h3>Electronics</h3>
-        </div>
-        <div id="electronics" class="products-row"></div>
-      </article>
-
-      <article class="category-row">
-        <div class="category-head">
-          <h3>Utensils</h3>
-        </div>
-        <div id="utensils" class="products-row"></div>
-      </article>
-
-      <article class="category-row">
-        <div class="category-head">
-          <h3>Home & Decor</h3>
-        </div>
-        <div id="home" class="products-row"></div>
-      </article>
-
-      <article class="category-row">
-        <div class="category-head">
-          <h3>Beauty & Lifestyle</h3>
-        </div>
-        <div id="lifestyle" class="products-row"></div>
-      </article>
+      <article class="category-row"><div class="category-head"><h3>Electronics</h3></div><div id="electronics" class="products-row"></div></article>
+      <article class="category-row"><div class="category-head"><h3>Utensils</h3></div><div id="utensils" class="products-row"></div></article>
+      <article class="category-row"><div class="category-head"><h3>Home & Decor</h3></div><div id="home" class="products-row"></div></article>
+      <article class="category-row"><div class="category-head"><h3>Beauty & Lifestyle</h3></div><div id="lifestyle" class="products-row"></div></article>
     </section>
 
     <section class="panel hidden" id="cart">
@@ -94,7 +74,7 @@
 
     <section class="panel admin">
       <h3>Admin Panel</h3>
-      <p class="note">Upload real photos directly (not image URLs).</p>
+      <p class="note">Upload your own photos for products, banner and logo.</p>
 
       <div class="admin-grid">
         <input id="pName" placeholder="Product name"/>
@@ -114,6 +94,8 @@
         <input id="bannerDescriptionInput" placeholder="Banner description" />
         <input id="bannerImageFileInput" type="file" accept="image/*" />
         <button id="addBanner" class="outline-btn">Add Banner Slide</button>
+        <input id="replaceBannerFileInput" type="file" accept="image/*" />
+        <button id="replaceBannerImage" class="solid-btn">Replace Current Banner Image</button>
       </div>
 
       <div class="admin-grid banner-admin">

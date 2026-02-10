@@ -17,13 +17,7 @@ const DEFAULT_BANNERS = [
   },
 ];
 
-const DEFAULT_SOCIALS = {
-  facebook: "",
-  instagram: "",
-  tiktok: "",
-  x: "",
-  youtube: "",
-};
+const DEFAULT_SOCIALS = { facebook: "", instagram: "", tiktok: "", x: "", youtube: "" };
 
 const state = {
   products: JSON.parse(localStorage.getItem("products") || "null") || DEFAULT_PRODUCTS,
@@ -48,6 +42,7 @@ const cartTotal = document.getElementById("cartTotal");
 const bannerTitle = document.getElementById("bannerTitle");
 const bannerDescription = document.getElementById("bannerDescription");
 const bannerImg = document.getElementById("bannerImg");
+const bannerMeta = document.getElementById("bannerMeta");
 const paymentNote = document.getElementById("paymentNote");
 const logoImg = document.getElementById("logoImg");
 const socialLinks = document.getElementById("socialLinks");
@@ -68,7 +63,6 @@ function readImage(fileInput) {
       reject(new Error("No file selected"));
       return;
     }
-
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(new Error("Failed to read image file"));
@@ -112,9 +106,12 @@ function renderCart() {
   cartItems.innerHTML = state.cart
     .map(
       (item, i) => `
-      <div class="card">
-        <strong>${item.name}</strong>
-        <p>KES ${Number(item.price).toLocaleString()}</p>
+      <div class="cart-item-row">
+        <img src="${item.img || "banner.jpg"}" alt="${item.name}" />
+        <div class="cart-details">
+          <strong>${item.name}</strong>
+          <p>KES ${Number(item.price).toLocaleString()}</p>
+        </div>
         <button class="outline-btn" onclick="removeFromCart(${i})">Remove</button>
       </div>
     `,
@@ -129,6 +126,7 @@ function renderBanner() {
   bannerTitle.textContent = active.title;
   bannerDescription.textContent = active.description;
   bannerImg.src = active.image;
+  bannerMeta.textContent = `Slide ${safeIndex + 1} of ${state.banners.length}`;
 }
 
 function renderSocialLinks() {
@@ -201,6 +199,20 @@ document.getElementById("addBanner").onclick = async () => {
   document.getElementById("bannerDescriptionInput").value = "";
   bannerFileInput.value = "";
 
+  save();
+  renderBanner();
+};
+
+document.getElementById("replaceBannerImage").onclick = async () => {
+  const replaceBannerFileInput = document.getElementById("replaceBannerFileInput");
+  if (!replaceBannerFileInput.files.length) {
+    alert("Upload an image to replace current banner slide.");
+    return;
+  }
+  const image = await readImage(replaceBannerFileInput);
+  const safeIndex = ((state.bannerIndex % state.banners.length) + state.banners.length) % state.banners.length;
+  state.banners[safeIndex].image = image;
+  replaceBannerFileInput.value = "";
   save();
   renderBanner();
 };
@@ -281,6 +293,12 @@ document.getElementById("payMpesa").onclick = async () => {
   window.open(`https://wa.me/?text=${message}`, "_blank");
   paymentNote.textContent = `Fallback opened. Complete M-Pesa payment to Till/Paybill ${till} then share your confirmation message.`;
 };
+
+setInterval(() => {
+  state.bannerIndex += 1;
+  save();
+  renderBanner();
+}, 5000);
 
 document.getElementById("year").textContent = new Date().getFullYear();
 logoImg.src = state.logo;
