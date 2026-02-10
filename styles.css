@@ -126,7 +126,7 @@ textarea {
 }
 
 .hero-wrap {
-  width: min(1600px, calc(100% - 20px));
+  width: min(1320px, calc(100% - 30px));
   height: 500px;
   margin: 14px auto 16px;
   border-radius: 20px;
