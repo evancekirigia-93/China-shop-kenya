@@ -54,9 +54,11 @@
     <section class="cart hidden" id="cart">
       <h3>Your Cart</h3>
       <div id="cartItems"></div>
+      <p><strong>Total:</strong> KES <span id="cartTotal">0</span></p>
       <div class="checkout">
         <label>M-Pesa Number (editable):</label>
         <input id="mpesa" value="0711493400"/>
+        <button id="checkoutWhatsApp">Checkout via WhatsApp</button>
         <button id="clearCart">Clear Cart</button>
       </div>
       <p class="note">Checkout flow can be extended later (M-Pesa STK, delivery form, etc.).</p>

@@ -18,8 +18,10 @@
 .card button{padding:8px;border:none;border-radius:8px;background:#0b7a36;color:#fff;cursor:pointer}
 .admin{margin:16px 0;padding:12px;background:#fff;border-radius:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
 .cart{margin:16px 0;padding:12px;background:#fff;border-radius:12px}
-.hidden{display:none}
+.cart-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:8px}
 .checkout{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#checkoutWhatsApp{background:#1f9d52;color:#fff;border:none;border-radius:8px;padding:8px 12px;cursor:pointer}
+.hidden{display:none}
 .note{opacity:.7}
 footer{padding:12px;text-align:center;opacity:.7}
 .back{color:#fff;text-decoration:none}
